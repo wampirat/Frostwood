@@ -1,18 +1,47 @@
-#include <iostream>
-#include <SDL.h>
-using namespace std;
+#include <SDL.h>        
+#include <SDL_image.h>
 
-int main(int argc, char * argv[])
+
+int main(int argc, char ** argv)
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	bool quit = false;
+	SDL_Event event;
+
+	SDL_Init(SDL_INIT_EVERYTHING);
+	IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
+
+	SDL_Window * window = SDL_CreateWindow("SDL2 Displaying Image",
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+
+	SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+	//SDL_Surface * image = SDL_LoadBMP("data/arrow.png");
+	SDL_Surface * image = IMG_Load("data/dna.jpg");
+	SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, image);
+
+	while (!quit)
 	{
-		cout << "SDL initialization failed. SDL Error: " << SDL_GetError();
-	}
-	else
-	{
-		cout << "SDL initialization succeeded!";
+		SDL_WaitEvent(&event);
+
+		switch (event.type)
+		{
+		case SDL_QUIT:
+			quit = true;
+			break;
+		}
+
+		//SDL_Rect dstrect = { 5, 5, 320, 240 };
+		//SDL_RenderCopy(renderer, texture, NULL, &dstrect);
+		SDL_RenderCopy(renderer, texture, NULL, NULL);
+		SDL_RenderPresent(renderer);
 	}
 
-	cin.get();
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(image);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+
+	IMG_Quit();
+	SDL_Quit();
+
 	return 0;
 }
